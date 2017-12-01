@@ -173,12 +173,14 @@ def GuessIncludeDirectory():
 
 def GuessSourceDirectory():
     '''
-    Return either 'src', 'lib', or the name of the parent directory if any one
-    of them exists in the current directory; the first found result is returned.
+    Return either 'src', 'source', 'lib', or the name of the parent directory if
+    any one of them exists in the current directory; the first found result is
+    returned.
     Otherwise 'OSError' is raised should all of the above fail.
     '''
     guess_candidates = (
         'src',
+        'source',
         'lib',
         os.path.basename(DirectoryOfThisScript())
     )
