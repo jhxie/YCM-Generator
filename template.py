@@ -43,13 +43,25 @@ import ycm_core
 
 
 # ========================== Configuration Options ============================
-GUESS_BUILD_DIRECTORY = False  # Experimental
+# Refer to the docstring of 'GuessBuildDirectory' function for further detail.
+# This is an experimental feature.
+GUESS_BUILD_DIRECTORY = False
+# Refer to the docstring of 'GuessIncludeDirectory' function for further detail.
 GUESS_INCLUDE_PATH = True
 # ========================== Configuration Options ============================
 
 # =========================== Constant Definitions ============================
-SOURCE_EXTENSIONS = ('.C', '.cpp', '.cxx', '.cc', '.c', '.m', '.mm')
-HEADER_EXTENSIONS = ('.H', '.h', '.hxx', '.hpp', '.hh')
+# NOTE:
+#
+# 1. The string comparison in this configuration file is performed in a case
+#    in-sensitive manner; for example, there is no difference between file
+#    extensions of the following: '.cc' '.CC' '.Cc' 'cC'
+#
+# 2. One of the naming conventions for C++ header and source files involve the
+#    use of uppercase '.H' and '.C' - this case is handled as if they are named
+#    as '.h', and '.c', respectively.
+SOURCE_EXTENSIONS = ('.cpp', '.cxx', '.cc', '.c', '.m', '.mm')
+HEADER_EXTENSIONS = ('.h', '.hxx', '.hpp', '.hh')
 # =========================== Constant Definitions ============================
 
 flags = [
@@ -201,9 +213,16 @@ def TraverseByDepth(root, include_extensions):
         2. No subdirectories would be excluded if 'include_extensions' is left
            to 'None'.
         3. Each entry in 'include_extensions' must begin with string '.'.
+        4. Each entry in 'include_extensions' is treated in a case-insensitive
+           manner.
     '''
     is_root = True
     result = set()
+
+    if include_extensions:
+        new_extensions = { entry.lower() for entry in include_extensions }
+        include_extensions = new_extensions
+
     # Perform a depth first top down traverse of the given directory tree.
     for root_dir, subdirs, file_list in os.walk(root):
         if not is_root:
@@ -212,7 +231,7 @@ def TraverseByDepth(root, include_extensions):
             if include_extensions:
                 get_ext = os.path.splitext
                 subdir_extensions = {
-                    get_ext(f)[-1] for f in file_list if get_ext(f)[-1]
+                    get_ext(f)[-1].lower() for f in file_list if get_ext(f)[-1]
                 }
                 if subdir_extensions & include_extensions:
                     result.add(root_dir)
@@ -292,7 +311,7 @@ def IsHeaderFile(filename):
     '''
     Check whether 'filename' is considered as a header file.
     '''
-    extension = os.path.splitext(filename)[1]
+    extension = os.path.splitext(filename)[1].lower()
     return extension in HEADER_EXTENSIONS
 
 
